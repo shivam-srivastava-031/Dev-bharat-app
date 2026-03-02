@@ -19,7 +19,7 @@ const posts = [
         time: '2 ghante pehle',
         content: '🪔 Diwali ki safai shuru! Ghar ko naya look de rahe hain. Family ke saath masti bhi ho rahi hai. #DiwaliPrep #IndianFestivals',
         image: null,
-        imageBg: '#FFF3E0',
+        imageBg: '#FF9933',
         likes: 234,
         comments: 45,
     },
@@ -30,7 +30,7 @@ const posts = [
         time: '4 ghante pehle',
         content: 'Just watched the most amazing sunset from Marine Drive! 🌅 Mumbai never fails to surprise. Ye city meri jaan hai! ❤️ #MumbaiDiaries #MarineDrive',
         image: null,
-        imageBg: '#FFE0B2',
+        imageBg: '#FFB533',
         likes: 567,
         comments: 89,
     },
@@ -41,7 +41,7 @@ const posts = [
         time: '5 ghante pehle',
         content: '🏏 What a match yaar! India ne last ball pe game jeet liya. Kohli ki century was absolutely incredible! Goosebumps moment! 🇮🇳🔥\n\n#IndiaVsAus #CricketFever #BleedBlue',
         image: null,
-        imageBg: '#E3F2FD',
+        imageBg: '#3B82F6',
         likes: 1203,
         comments: 312,
     },
@@ -52,7 +52,7 @@ const posts = [
         time: '8 ghante pehle',
         content: 'Started learning Kathak from Guru ji today! 💃 Indian classical dance is such a beautiful art form. Feeling grateful for our rich culture. 🙏\n\n#Kathak #IndianDance #ClassicalArt',
         image: null,
-        imageBg: '#F3E5F5',
+        imageBg: '#A855F7',
         likes: 89,
         comments: 23,
     },
@@ -63,62 +63,64 @@ const posts = [
         time: '12 ghante pehle',
         content: '🍛 Made the perfect Hyderabadi biryani today! Secret ingredient — dum cooking for 45 mins. Aroma se poora ghar mein khushbu aa gayi! Recipe share karun kya?\n\n#HyderabadiBiryani #IndianFood #Foodie',
         image: null,
-        imageBg: '#FFF3E0',
+        imageBg: '#F59E0B',
         likes: 445,
         comments: 156,
     },
 ];
 
+const filterChips = ['🔥 Trending', '🏏 Cricket', '🎬 Bollywood', '💻 Tech', '🍛 Food', '🎵 Music'];
+
 export default function Feed() {
-    const [activeStory, setActiveStory] = useState(null);
+    const [activeFilter, setActiveFilter] = useState(0);
 
     return (
-        <div className="animate-fade-in">
+        <div>
             {/* Stories Row */}
-            <div className="bg-white border-b border-gray-100 px-3 py-3">
+            <div className="border-b border-white/5 px-3 py-3">
                 <div className="flex gap-3 overflow-x-auto scrollbar-hide pb-1">
                     {/* Your Story */}
-                    <button className="flex flex-col items-center gap-1 flex-shrink-0">
-                        <div className="relative w-16 h-16 rounded-full bg-gray-100 flex items-center justify-center border-2 border-dashed border-gray-300">
+                    <button className="flex flex-col items-center gap-1.5 flex-shrink-0 group">
+                        <div className="relative w-16 h-16 rounded-2xl bg-white/5 flex items-center justify-center border-2 border-dashed border-dark-400 group-hover:border-saffron-500/50 transition-colors">
                             <span className="text-2xl">📷</span>
-                            <div className="absolute -bottom-0.5 -right-0.5 w-5 h-5 rounded-full bg-saffron-500 flex items-center justify-center shadow-sm">
+                            <div className="absolute -bottom-0.5 -right-0.5 w-5 h-5 rounded-full gradient-saffron flex items-center justify-center shadow-glow-saffron-sm">
                                 <span className="text-white text-xs font-bold">+</span>
                             </div>
                         </div>
-                        <span className="text-[10px] text-gray-500 font-medium">Your Story</span>
+                        <span className="text-[10px] text-dark-300 font-medium">Your Story</span>
                     </button>
 
                     {/* Other Stories */}
                     {stories.map((story) => (
                         <button
                             key={story.id}
-                            onClick={() => setActiveStory(story.id)}
-                            className="flex flex-col items-center gap-1 flex-shrink-0"
+                            className="flex flex-col items-center gap-1.5 flex-shrink-0 group"
                         >
                             <div
-                                className={`w-16 h-16 rounded-full flex items-center justify-center text-2xl ${story.hasNew
-                                        ? `p-0.5 bg-gradient-to-br ${story.gradient}`
-                                        : 'border-2 border-gray-200'
+                                className={`w-16 h-16 rounded-2xl flex items-center justify-center text-2xl transition-transform group-hover:scale-105 group-active:scale-95 ${story.hasNew
+                                        ? `p-0.5 bg-gradient-to-br ${story.gradient} shadow-lg`
+                                        : 'border-2 border-dark-500'
                                     }`}
                             >
-                                <div className="w-full h-full rounded-full bg-white flex items-center justify-center">
+                                <div className="w-full h-full rounded-[14px] bg-dark-800 flex items-center justify-center">
                                     <span>{story.emoji}</span>
                                 </div>
                             </div>
-                            <span className="text-[10px] text-gray-600 font-medium">{story.name}</span>
+                            <span className="text-[10px] text-dark-200 font-medium">{story.name}</span>
                         </button>
                     ))}
                 </div>
             </div>
 
             {/* Filter Chips */}
-            <div className="flex gap-2 px-4 py-3 overflow-x-auto">
-                {['🔥 Trending', '🏏 Cricket', '🎬 Bollywood', '💻 Tech', '🍛 Food', '🎵 Music'].map((chip, i) => (
+            <div className="flex gap-2 px-4 py-3 overflow-x-auto scrollbar-hide">
+                {filterChips.map((chip, i) => (
                     <button
                         key={chip}
-                        className={`px-3 py-1.5 rounded-full text-xs font-medium whitespace-nowrap transition-all ${i === 0
-                                ? 'gradient-saffron text-white shadow-md'
-                                : 'bg-white text-gray-600 border border-gray-200 hover:border-saffron-300 hover:text-saffron-600'
+                        onClick={() => setActiveFilter(i)}
+                        className={`px-3.5 py-2 rounded-xl text-xs font-semibold whitespace-nowrap transition-all duration-200 active:scale-95 ${i === activeFilter
+                                ? 'gradient-saffron text-white shadow-glow-saffron-sm'
+                                : 'bg-white/5 text-dark-200 border border-white/5 hover:border-saffron-500/30 hover:text-saffron-400'
                             }`}
                     >
                         {chip}
@@ -128,10 +130,17 @@ export default function Feed() {
 
             {/* Posts */}
             <div className="flex flex-col gap-3 px-3 pb-4">
-                {posts.map((post) => (
-                    <PostCard key={post.id} post={post} />
+                {posts.map((post, i) => (
+                    <PostCard key={post.id} post={post} index={i} />
                 ))}
             </div>
+
+            {/* Create Post FAB */}
+            <button className="fab gradient-saffron" aria-label="Create post">
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M12 4v16m8-8H4" />
+                </svg>
+            </button>
         </div>
     );
 }

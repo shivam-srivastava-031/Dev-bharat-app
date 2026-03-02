@@ -12,12 +12,12 @@ const welcomeMessages = {
 };
 
 const suggestedQueries = [
-    '🏏 IPL updates batao',
-    '🍛 Biryani recipe do',
-    '💻 Coding tips in Hindi',
-    '🎬 Best Bollywood 2025',
-    '🧘 Yoga for beginners',
-    '🌏 Translate to Hindi',
+    { text: '🏏 IPL updates batao', color: 'from-blue-500/10 to-indigo-500/10', border: 'border-blue-500/15' },
+    { text: '🍛 Biryani recipe do', color: 'from-orange-500/10 to-red-500/10', border: 'border-orange-500/15' },
+    { text: '💻 Coding tips in Hindi', color: 'from-green-500/10 to-emerald-500/10', border: 'border-green-500/15' },
+    { text: '🎬 Best Bollywood 2025', color: 'from-pink-500/10 to-rose-500/10', border: 'border-pink-500/15' },
+    { text: '🧘 Yoga for beginners', color: 'from-teal-500/10 to-cyan-500/10', border: 'border-teal-500/15' },
+    { text: '🌏 Translate to Hindi', color: 'from-purple-500/10 to-violet-500/10', border: 'border-purple-500/15' },
 ];
 
 export default function AIChat() {
@@ -102,30 +102,31 @@ export default function AIChat() {
     };
 
     return (
-        <div className="flex flex-col h-[calc(100dvh-120px)] animate-fade-in">
+        <div className="flex flex-col h-[calc(100dvh-120px)]">
             {/* AI Chat Header */}
-            <div className="bg-white border-b border-gray-100 px-4 py-2.5">
-                <div className="flex items-center justify-between mb-2">
-                    <div className="flex items-center gap-2">
-                        <div className="w-8 h-8 rounded-full gradient-saffron flex items-center justify-center shadow-md">
-                            <span className="text-sm">🤖</span>
+            <div className="glass-light border-b border-white/5 px-4 py-3">
+                <div className="flex items-center justify-between mb-3">
+                    <div className="flex items-center gap-2.5">
+                        <div className="relative">
+                            <div className="w-10 h-10 rounded-xl gradient-saffron flex items-center justify-center shadow-glow-saffron-sm">
+                                <span className="text-lg">🤖</span>
+                            </div>
+                            <div className="absolute -bottom-0.5 -right-0.5 w-3 h-3 bg-india-green-400 rounded-full border-2 border-dark-700 shadow-glow-green" />
                         </div>
                         <div>
-                            <h2 className="text-sm font-bold text-gray-800">BharatAI</h2>
-                            <p className="text-[10px] text-india-green-500 font-medium">● Online — Ready to help</p>
+                            <h2 className="text-sm font-extrabold text-dark-50">BharatAI</h2>
+                            <p className="text-[10px] text-india-green-400 font-semibold">● Online — Ready to help</p>
                         </div>
                     </div>
-                    <div className="flex items-center gap-1">
-                        <span className="text-[10px] text-gray-400 bg-gray-100 px-2 py-0.5 rounded-full">
-                            Demo Mode
-                        </span>
-                    </div>
+                    <span className="text-[10px] text-dark-400 bg-white/5 px-2.5 py-1 rounded-lg border border-white/5 font-medium">
+                        Demo Mode
+                    </span>
                 </div>
                 <ModelSwitcher currentModel={currentModel} onModelChange={handleModelChange} />
             </div>
 
             {/* Messages Area */}
-            <div className="flex-1 overflow-y-auto px-4 py-4 space-y-3 bg-gradient-to-b from-gray-50 to-white">
+            <div className="flex-1 overflow-y-auto px-4 py-4 space-y-3">
                 {messages.map((msg) => (
                     <ChatBubble key={msg.id} message={msg.content} type={msg.type} />
                 ))}
@@ -133,13 +134,13 @@ export default function AIChat() {
                 {/* Typing Indicator */}
                 {isLoading && (
                     <div className="chat-bubble-ai mr-auto max-w-[60%] px-4 py-3 shadow-sm">
-                        <div className="flex items-center gap-1.5 mb-1">
-                            <div className="w-4 h-4 rounded-full gradient-saffron flex items-center justify-center">
-                                <span className="text-[8px]">🤖</span>
+                        <div className="flex items-center gap-1.5 mb-1.5">
+                            <div className="w-5 h-5 rounded-full gradient-saffron flex items-center justify-center shadow-glow-saffron-sm">
+                                <span className="text-[9px]">🤖</span>
                             </div>
-                            <span className="text-[10px] font-semibold text-india-green-600">BharatAI</span>
+                            <span className="text-[10px] font-bold text-saffron-400">BharatAI</span>
                         </div>
-                        <div className="flex items-center gap-1.5 py-1">
+                        <div className="flex items-center gap-2 py-1">
                             <div className="typing-dot" />
                             <div className="typing-dot" />
                             <div className="typing-dot" />
@@ -149,24 +150,24 @@ export default function AIChat() {
 
                 {/* Error */}
                 {error && (
-                    <div className="bg-red-50 border border-red-200 rounded-xl px-4 py-3 text-sm text-red-600 animate-slide-up">
-                        <p className="font-medium">⚠️ Error</p>
-                        <p className="text-xs mt-1">{error}</p>
+                    <div className="bg-red-500/10 border border-red-500/20 rounded-xl px-4 py-3 text-sm text-red-400 animate-slide-up">
+                        <p className="font-bold">⚠️ Error</p>
+                        <p className="text-xs mt-1 text-red-300">{error}</p>
                     </div>
                 )}
 
-                {/* Suggested Queries (show only when few messages) */}
+                {/* Suggested Queries */}
                 {messages.length <= 1 && !isLoading && (
-                    <div className="pt-2">
-                        <p className="text-xs text-gray-400 mb-2 font-medium">Try asking:</p>
-                        <div className="flex flex-wrap gap-2">
+                    <div className="pt-4">
+                        <p className="text-xs text-dark-400 mb-3 font-semibold">Try asking:</p>
+                        <div className="grid grid-cols-2 gap-2">
                             {suggestedQueries.map((query) => (
                                 <button
-                                    key={query}
-                                    onClick={() => sendMessage(query)}
-                                    className="bg-white border border-gray-200 rounded-full px-3 py-1.5 text-xs text-gray-600 hover:border-saffron-300 hover:text-saffron-600 hover:bg-saffron-50 transition-all shadow-sm"
+                                    key={query.text}
+                                    onClick={() => sendMessage(query.text)}
+                                    className={`bg-gradient-to-br ${query.color} border ${query.border} rounded-xl px-3 py-3 text-xs text-dark-100 hover:bg-white/5 transition-all text-left font-medium active:scale-[0.98]`}
                                 >
-                                    {query}
+                                    {query.text}
                                 </button>
                             ))}
                         </div>
@@ -177,13 +178,13 @@ export default function AIChat() {
             </div>
 
             {/* Input Area */}
-            <form onSubmit={handleSubmit} className="bg-white border-t border-gray-100 px-3 py-2 flex items-center gap-2">
+            <form onSubmit={handleSubmit} className="glass-light border-t border-white/5 px-3 py-2.5 flex items-center gap-2">
                 <button
                     type="button"
-                    className="w-9 h-9 rounded-full bg-gray-100 flex items-center justify-center flex-shrink-0 hover:bg-gray-200 transition-colors"
+                    className="w-9 h-9 rounded-xl bg-white/5 flex items-center justify-center flex-shrink-0 hover:bg-white/10 transition-colors active:scale-95"
                     aria-label="Voice input"
                 >
-                    <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                    <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 text-dark-300" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                         <path strokeLinecap="round" strokeLinejoin="round" d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z" />
                     </svg>
                 </button>
@@ -192,13 +193,13 @@ export default function AIChat() {
                     value={input}
                     onChange={(e) => setInput(e.target.value)}
                     placeholder="BharatAI se poochho..."
-                    className="flex-1 bg-gray-100 rounded-full px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-saffron-300 transition-all"
+                    className="flex-1 bg-white/5 rounded-xl px-4 py-2.5 text-sm text-dark-50 placeholder-dark-400 focus:outline-none focus:ring-2 focus:ring-saffron-500/30 border border-white/5 transition-all"
                     disabled={isLoading}
                 />
                 <button
                     type="submit"
                     disabled={!input.trim() || isLoading}
-                    className="w-9 h-9 rounded-full gradient-saffron flex items-center justify-center shadow-md flex-shrink-0 hover:opacity-90 transition-opacity disabled:opacity-50 disabled:cursor-not-allowed"
+                    className="w-9 h-9 rounded-xl gradient-saffron flex items-center justify-center shadow-glow-saffron-sm flex-shrink-0 hover:opacity-90 transition-all disabled:opacity-30 disabled:cursor-not-allowed disabled:shadow-none active:scale-95"
                     aria-label="Send message"
                 >
                     <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>

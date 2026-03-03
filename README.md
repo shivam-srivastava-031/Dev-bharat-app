@@ -82,58 +82,85 @@ VITE_WEATHER_API_KEY=           # 1K/day     — openweathermap.org/api
 
 ## 📁 Project Structure
 
+### 🖥️ Frontend (`src/`)
+
 ```
-bharatapp/
-├── public/
-│   ├── manifest.json           # PWA manifest
-│   ├── sw.js                   # Service worker (offline caching)
-│   └── logo.png
-├── src/
-│   ├── components/
-│   │   ├── BottomNav.jsx       # 5-tab bottom navigation
-│   │   └── PostCard.jsx        # Feed post card with "Not Interested"
-│   ├── contexts/
-│   │   └── AuthContext.jsx     # Firebase auth provider
-│   ├── lib/
-│   │   ├── firebase.js         # Firebase init
-│   │   └── supabase.js         # Supabase client
-│   ├── pages/
-│   │   ├── Feed.jsx            # AI-ranked feed (cache-first)
-│   │   ├── Video.jsx           # YouTube Reels player
-│   │   ├── Search.jsx          # Cricket + News + Weather
-│   │   ├── Messaging.jsx       # Chat UI
-│   │   ├── Community.jsx       # Groups
-│   │   ├── AIChat.jsx          # BharatAI chatbot
-│   │   ├── Profile.jsx         # User profile
-│   │   ├── OnboardingScreen.jsx # 2-step onboarding (topics + language)
-│   │   ├── AdminDashboard.jsx  # Analytics dashboard
-│   │   └── Login.jsx           # Auth screen
-│   ├── services/
-│   │   ├── feedPipeline.js     # 6-stage ranking pipeline
-│   │   ├── coldStart.js        # Onboarding + affinity seeding
-│   │   ├── trendingBoost.js    # Velocity + festival detection
-│   │   ├── sessionDiversity.js # Fatigue + discovery slots
-│   │   ├── eventTracker.js     # Signal collection + Supabase sync
-│   │   ├── collaborativeFilter.js
-│   │   ├── offlineCache.js     # IndexedDB stale-while-revalidate
-│   │   ├── rankingApi.js       # Edge Function proxy
-│   │   ├── storage.js          # Supabase Storage
-│   │   ├── unsplashService.js  # Photos API
-│   │   ├── youtubeService.js   # Videos API
-│   │   ├── newsService.js      # GNews API
-│   │   ├── cricketService.js   # CricAPI
-│   │   └── weatherService.js   # OpenWeatherMap
-│   ├── App.jsx
-│   ├── main.jsx
-│   └── index.css               # Design system + animations
-├── supabase/
-│   └── functions/
-│       └── rank-feed/index.js  # Server-side ranking (JWT auth)
-├── android/                    # Capacitor Android project
-├── ios/                        # Capacitor iOS project
-├── capacitor.config.json       # Native app config
-├── vercel.json                 # Vercel deployment config
-└── .env                        # API keys (not committed)
+src/
+├── components/                    # Reusable UI components
+│   ├── BottomNav.jsx              #   5-tab bottom navigation bar
+│   ├── PostCard.jsx               #   Feed post card (like, save, "Not Interested")
+│   ├── ChatBubble.jsx             #   Chat message bubbles
+│   └── ModelSwitcher.jsx          #   AI provider toggle
+│
+├── pages/                         # App screens
+│   ├── Feed.jsx                   #   AI-ranked social feed (cache-first)
+│   ├── Video.jsx                  #   YouTube Reels/Shorts player
+│   ├── Search.jsx                 #   Live cricket, news & weather
+│   ├── Messaging.jsx              #   Chat list + conversations
+│   ├── Community.jsx              #   Community groups
+│   ├── AIChat.jsx                 #   BharatAI chatbot
+│   ├── Profile.jsx                #   User profile & settings
+│   ├── OnboardingScreen.jsx       #   2-step onboarding (topics + language)
+│   ├── AdminDashboard.jsx         #   Real-time analytics (A/B, engagement, cache)
+│   └── Login.jsx                  #   Auth screen (Google, demo mode)
+│
+├── contexts/                      # React context providers
+│   └── AuthContext.jsx            #   Firebase auth state management
+│
+├── lib/                           # Client SDK initialization
+│   ├── firebase.js                #   Firebase config + auth
+│   └── supabase.js                #   Supabase client
+│
+├── App.jsx                        # Root layout + routing
+├── main.jsx                       # Entry point
+└── index.css                      # Design system, animations, utilities
+```
+
+### ⚙️ Backend / Services (`src/services/` + `supabase/`)
+
+```
+src/services/
+├── 🧠 Intelligence Layer
+│   ├── feedPipeline.js            # 6-stage ranking pipeline (drop-in runPipeline())
+│   ├── coldStart.js               # Onboarding topics + language, affinity seeding
+│   ├── trendingBoost.js           # Velocity scoring, festival auto-detection
+│   ├── sessionDiversity.js        # Fatigue multiplier, discovery slots
+│   ├── recommendationEngine.js    # Legacy ranker (now used as fallback)
+│   ├── collaborativeFilter.js     # "People like you also liked..."
+│   └── eventTracker.js            # Signal collection + Supabase sync
+│
+├── 📡 API Integrations
+│   ├── unsplashService.js         # Unsplash photos (50 req/hr)
+│   ├── youtubeService.js          # YouTube trending videos (10K/day)
+│   ├── newsService.js             # GNews headlines (100/day)
+│   ├── cricketService.js          # CricAPI live scores (100/day)
+│   └── weatherService.js          # OpenWeatherMap (1K/day)
+│
+├── 🔧 Infrastructure
+│   ├── offlineCache.js            # IndexedDB stale-while-revalidate
+│   ├── rankingApi.js              # Edge Function proxy + fallback
+│   ├── storage.js                 # Supabase Storage uploads
+│   └── searchService.js           # BM25 + personalized search
+│
+supabase/
+└── functions/
+    └── rank-feed/
+        └── index.js               # 🔒 Server-side ranking (JWT auth, private weights)
+```
+
+### 📱 Native & PWA
+
+```
+public/
+├── manifest.json                  # PWA manifest (installable)
+├── sw.js                          # Service worker (offline + push)
+└── logo.png                       # App icon (512×512)
+
+android/                           # Capacitor Android project (Android Studio)
+ios/                               # Capacitor iOS project (Xcode)
+capacitor.config.json              # Native config (com.bharatapp)
+vercel.json                        # Vercel SPA deployment config
+```
 ```
 
 ---

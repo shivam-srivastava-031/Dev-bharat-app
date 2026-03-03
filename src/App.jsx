@@ -12,6 +12,7 @@ import Messaging from './pages/Messaging';
 import Community from './pages/Community';
 import AIChat from './pages/AIChat';
 import Profile from './pages/Profile';
+import AdminDashboard from './pages/AdminDashboard';
 
 function ProtectedRoute({ children }) {
     const { user, loading } = useAuth();
@@ -101,6 +102,7 @@ function App() {
                             <Route path="/community" element={<Community />} />
                             <Route path="/ai-chat" element={<AIChat />} />
                             <Route path="/profile" element={<Profile />} />
+                            <Route path="/admin" element={<AdminDashboard />} />
                         </Routes>
                     </div>
                 </main>

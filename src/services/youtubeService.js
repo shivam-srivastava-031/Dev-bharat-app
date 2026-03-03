@@ -52,18 +52,36 @@ export async function getTrendingVideos(maxResults = 10) {
 }
 
 /**
- * Get YouTube Shorts (short-form videos)
+ * Get YouTube Shorts / trending short videos
+ * Uses trending endpoint first (includes stats), falls back to search
  */
 export async function getShorts(maxResults = 10) {
     if (isDemoMode()) return demoVideos;
 
     try {
+        // Try trending first — includes statistics and higher quality data
         const res = await fetch(
-            `${BASE_URL}/search?part=snippet&q=Indian shorts&type=video&videoDuration=short&maxResults=${maxResults}&regionCode=IN&key=${API_KEY}`
+            `${BASE_URL}/videos?part=snippet,statistics&chart=mostPopular&regionCode=IN&videoCategoryId=10&maxResults=${maxResults}&key=${API_KEY}`
         );
-        if (!res.ok) throw new Error(`YouTube: ${res.status}`);
+        if (!res.ok) {
+            // Fallback to search if trending fails
+            const searchRes = await fetch(
+                `${BASE_URL}/search?part=snippet&q=trending India shorts&type=video&videoDuration=short&maxResults=${maxResults}&regionCode=IN&key=${API_KEY}`
+            );
+            if (!searchRes.ok) throw new Error(`YouTube: ${searchRes.status}`);
+            const searchData = await searchRes.json();
+            return (searchData.items || []).map(item => ({
+                ...item,
+                statistics: { viewCount: '0', likeCount: '0' },
+            }));
+        }
         const data = await res.json();
-        return data.items || [];
+        // Trending returns {id: "string"} not {id: {videoId: "string"}}  
+        return (data.items || []).map(item => ({
+            id: { videoId: item.id },
+            snippet: item.snippet,
+            statistics: item.statistics || { viewCount: '0', likeCount: '0' },
+        }));
     } catch (error) {
         console.warn('YouTube error, using demo:', error.message);
         return demoVideos;

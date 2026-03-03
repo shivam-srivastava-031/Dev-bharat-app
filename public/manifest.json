@@ -1,0 +1,27 @@
+{
+    "name": "BharatApp — India's Super App",
+    "short_name": "BharatApp",
+    "description": "India's social platform — feed, reels, news, cricket & more",
+    "start_url": "/",
+    "display": "standalone",
+    "orientation": "portrait",
+    "background_color": "#0f0f13",
+    "theme_color": "#FF9933",
+    "lang": "en",
+    "categories": [
+        "social",
+        "entertainment",
+        "news"
+    ],
+    "icons": [
+        {
+            "src": "/logo.png",
+            "sizes": "512x512",
+            "type": "image/png",
+            "purpose": "any maskable"
+        }
+    ],
+    "screenshots": [],
+    "related_applications": [],
+    "prefer_related_applications": false
+}

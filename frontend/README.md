@@ -43,6 +43,7 @@ A mobile-first social super app for India, built with **React + Vite**. Features
 
 ```bash
 # Install dependencies
+cd frontend
 npm install
 
 # Start dev server
@@ -82,44 +83,45 @@ VITE_WEATHER_API_KEY=           # 1K/day     — openweathermap.org/api
 
 ## 📁 Project Structure
 
-### 🖥️ Frontend (`src/`)
+### 🖥️ Frontend (`frontend/`)
 
 ```
-src/
-├── components/                    # Reusable UI components
-│   ├── BottomNav.jsx              #   5-tab bottom navigation bar
-│   ├── PostCard.jsx               #   Feed post card (like, save, "Not Interested")
-│   ├── ChatBubble.jsx             #   Chat message bubbles
-│   └── ModelSwitcher.jsx          #   AI provider toggle
-│
-├── pages/                         # App screens
-│   ├── Feed.jsx                   #   AI-ranked social feed (cache-first)
-│   ├── Video.jsx                  #   YouTube Reels/Shorts player
-│   ├── Search.jsx                 #   Live cricket, news & weather
-│   ├── Messaging.jsx              #   Chat list + conversations
-│   ├── Community.jsx              #   Community groups
-│   ├── AIChat.jsx                 #   BharatAI chatbot
-│   ├── Profile.jsx                #   User profile & settings
-│   ├── OnboardingScreen.jsx       #   2-step onboarding (topics + language)
-│   ├── AdminDashboard.jsx         #   Real-time analytics (A/B, engagement, cache)
-│   └── Login.jsx                  #   Auth screen (Google, demo mode)
-│
-├── contexts/                      # React context providers
-│   └── AuthContext.jsx            #   Firebase auth state management
-│
-├── lib/                           # Client SDK initialization
-│   ├── firebase.js                #   Firebase config + auth
-│   └── supabase.js                #   Supabase client
-│
-├── App.jsx                        # Root layout + routing
-├── main.jsx                       # Entry point
-└── index.css                      # Design system, animations, utilities
+frontend/
+├── src/
+│   ├── components/                    # Reusable UI components
+│   │   ├── BottomNav.jsx              #   5-tab bottom navigation bar
+│   │   ├── PostCard.jsx               #   Feed post card (like, save, "Not Interested")
+│   │   ├── ChatBubble.jsx             #   Chat message bubbles
+│   │   └── ModelSwitcher.jsx          #   AI provider toggle
+│   │
+│   ├── pages/                         # App screens
+│   │   ├── Feed.jsx                   #   AI-ranked social feed (cache-first)
+│   │   ├── Video.jsx                  #   YouTube Reels/Shorts player
+│   │   ├── Search.jsx                 #   Live cricket, news & weather
+│   │   ├── Messaging.jsx              #   Chat list + conversations
+│   │   ├── Community.jsx              #   Community groups
+│   │   ├── AIChat.jsx                 #   BharatAI chatbot
+│   │   ├── Profile.jsx                #   User profile & settings
+│   │   ├── OnboardingScreen.jsx       #   2-step onboarding (topics + language)
+│   │   ├── AdminDashboard.jsx         #   Real-time analytics (A/B, engagement, cache)
+│   │   └── Login.jsx                  #   Auth screen (Google, demo mode)
+│   │
+│   ├── contexts/                      # React context providers
+│   │   └── AuthContext.jsx            #   Firebase auth state management
+│   │
+│   ├── lib/                           # Client SDK initialization
+│   │   ├── firebase.js                #   Firebase config + auth
+│   │   └── supabase.js                #   Supabase client
+│   │
+│   ├── App.jsx                        # Root layout + routing
+│   ├── main.jsx                       # Entry point
+│   └── index.css                      # Design system, animations, utilities
 ```
 
-### ⚙️ Backend / Services (`src/services/` + `supabase/`)
+### ⚙️ Backend / Services (`frontend/src/services/` + `backend/supabase/`)
 
 ```
-src/services/
+frontend/src/services/
 ├── 🧠 Intelligence Layer
 │   ├── feedPipeline.js            # 6-stage ranking pipeline (drop-in runPipeline())
 │   ├── coldStart.js               # Onboarding topics + language, affinity seeding
@@ -142,7 +144,7 @@ src/services/
 │   ├── storage.js                 # Supabase Storage uploads
 │   └── searchService.js           # BM25 + personalized search
 │
-supabase/
+backend/supabase/
 └── functions/
     └── rank-feed/
         └── index.js               # 🔒 Server-side ranking (JWT auth, private weights)
@@ -151,16 +153,16 @@ supabase/
 ### 📱 Native & PWA
 
 ```
-public/
-├── manifest.json                  # PWA manifest (installable)
-├── sw.js                          # Service worker (offline + push)
-└── logo.png                       # App icon (512×512)
-
-android/                           # Capacitor Android project (Android Studio)
-ios/                               # Capacitor iOS project (Xcode)
-capacitor.config.json              # Native config (com.bharatapp)
-vercel.json                        # Vercel SPA deployment config
-```
+frontend/
+├── public/
+│   ├── manifest.json                  # PWA manifest (installable)
+│   ├── sw.js                          # Service worker (offline + push)
+│   └── logo.png                       # App icon (512×512)
+│
+├── android/                           # Capacitor Android project (Android Studio)
+├── ios/                               # Capacitor iOS project (Xcode)
+├── capacitor.config.json              # Native config (com.bharatapp)
+└── vercel.json                        # Vercel SPA deployment config
 ```
 
 ---
@@ -169,6 +171,7 @@ vercel.json                        # Vercel SPA deployment config
 
 ### Web (Vercel)
 ```bash
+cd frontend
 npm i -g vercel
 vercel
 # Add VITE_* env vars in Vercel Dashboard → Settings → Environment Variables
@@ -176,6 +179,7 @@ vercel
 
 ### Android (Play Store)
 ```bash
+cd frontend
 npm run build
 npx cap sync android
 npx cap open android
@@ -184,6 +188,7 @@ npx cap open android
 
 ### iOS (App Store)
 ```bash
+cd frontend
 npm run build
 npx cap sync ios
 npx cap open ios

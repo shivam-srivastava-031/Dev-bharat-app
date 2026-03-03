@@ -1,7 +1,7 @@
 // CricAPI Service — Free: 100 req/day
 // https://cricapi.com
 
-const API_KEY = import.meta.env.VITE_CRICAPI_KEY;
+const API_KEY = import.meta.env.VITE_CRICKET_API_KEY;
 const BASE_URL = 'https://api.cricapi.com/v1';
 const isDemoMode = () => !API_KEY || API_KEY === 'your_cricapi_key';
 

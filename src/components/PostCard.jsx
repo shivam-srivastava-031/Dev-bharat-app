@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { trackLike, trackSave, trackNotInterested, trackClick } from '../services/eventTracker';
-import { recordClickThrough } from '../services/recommendationEngine';
+import { recordClickThrough } from '../services/feedPipeline';
 
 const PostCard = ({ post, index, onRemove }) => {
     const [liked, setLiked] = useState(false);

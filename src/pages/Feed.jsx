@@ -4,7 +4,7 @@ import { getFeedPhotos } from '../services/unsplashService';
 import { getTopHeadlines, formatNewsDate } from '../services/newsService';
 import { getCurrentMatches, formatScore } from '../services/cricketService';
 import { getCurrentWeather } from '../services/weatherService';
-import { rankFeedServerSide } from '../services/rankingApi';
+import { runPipeline } from '../services/feedPipeline';
 import { trackLike, trackSave, trackView, trackClick } from '../services/eventTracker';
 import { getCollaborativeRecommendations } from '../services/collaborativeFilter';
 import { cacheFeed, getCachedFeed } from '../services/offlineCache';
@@ -117,15 +117,11 @@ export default function Feed() {
         })),
     ];
 
-    // 🧠 Rank feed — server-side (async) with client fallback
+    // 🧠 Run full feed pipeline (cold start → rank → trending → fatigue → diversity)
     const [posts, setPosts] = useState([]);
     useEffect(() => {
         if (rawPosts.length === 0) return;
-        let cancelled = false;
-        rankFeedServerSide(rawPosts, { diversify: true, boostLive: true })
-            .then(ranked => { if (!cancelled) setPosts(ranked); })
-            .catch(() => setPosts(rawPosts));
-        return () => { cancelled = true; };
+        setPosts(runPipeline(rawPosts));
     }, [photos, news, cricket, weather]);
 
     // Event tracking callbacks

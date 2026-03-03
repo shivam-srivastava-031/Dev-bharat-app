@@ -3,7 +3,8 @@ import { useState } from 'react';
 import { useAuth } from './contexts/AuthContext';
 import BottomNav from './components/BottomNav';
 import Login from './pages/Login';
-import Onboarding, { isOnboarded } from './pages/Onboarding';
+import OnboardingScreen from './pages/OnboardingScreen';
+import { isOnboarded } from './services/coldStart';
 import Feed from './pages/Feed';
 import Video from './pages/Video';
 import Search from './pages/Search';
@@ -50,9 +51,9 @@ function App() {
         );
     }
 
-    // Show Onboarding for cold-start users who haven't picked topics yet
+    // Show OnboardingScreen for cold-start users
     if (user && !onboarded) {
-        return <Onboarding onComplete={() => setOnboarded(true)} />;
+        return <OnboardingScreen onComplete={() => setOnboarded(true)} />;
     }
 
 

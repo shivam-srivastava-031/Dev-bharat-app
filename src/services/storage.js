@@ -1,19 +1,17 @@
-// Cloudflare R2 Storage Service — uses S3-compatible API via CDN
-// R2 is S3-compatible, so we use the AWS S3 presigned URL approach
-
-const R2_CONFIG = {
-    accountId: import.meta.env.VITE_R2_ACCOUNT_ID,
-    accessKeyId: import.meta.env.VITE_R2_ACCESS_KEY_ID,
-    secretAccessKey: import.meta.env.VITE_R2_SECRET_ACCESS_KEY,
-    bucketName: import.meta.env.VITE_R2_BUCKET_NAME || 'bharatapp-media',
-    publicUrl: import.meta.env.VITE_R2_PUBLIC_URL,
-};
-
-const isDemoMode = () => !R2_CONFIG.accessKeyId || R2_CONFIG.accessKeyId === 'your_r2_access_key';
-
 /**
- * Generate a unique filename for uploads
+ * Storage Service — uses Supabase Storage (S3-compatible, 1GB free)
+ *
+ * Buckets:
+ *   - profiles  → profile images
+ *   - posts     → post images/videos
+ *   - stories   → story media
+ *   - groups    → group cover images
  */
+
+import { supabase } from '../lib/supabase';
+
+const isDemoMode = () => !supabase;
+
 function generateFileName(file, folder = 'uploads') {
     const ext = file.name.split('.').pop();
     const timestamp = Date.now();
@@ -22,14 +20,11 @@ function generateFileName(file, folder = 'uploads') {
 }
 
 /**
- * Upload a file to Cloudflare R2
- * In production: uses direct R2 API or a backend presigned URL endpoint
- * In demo: returns a placeholder URL
+ * Upload a file to Supabase Storage
  */
-export async function uploadFile(file, folder = 'uploads') {
+export async function uploadFile(file, folder = 'uploads', bucket = 'media') {
     if (isDemoMode()) {
         console.log(`📁 [Demo] Would upload: ${file.name} (${(file.size / 1024).toFixed(1)}KB) to ${folder}/`);
-        // Return a demo URL
         return {
             url: `https://placehold.co/400x400/FF9933/white?text=${encodeURIComponent(file.name)}`,
             key: generateFileName(file, folder),
@@ -39,75 +34,63 @@ export async function uploadFile(file, folder = 'uploads') {
     }
 
     const key = generateFileName(file, folder);
-    const endpoint = `https://${R2_CONFIG.accountId}.r2.cloudflarestorage.com/${R2_CONFIG.bucketName}/${key}`;
 
     try {
-        const response = await fetch(endpoint, {
-            method: 'PUT',
-            headers: {
-                'Content-Type': file.type,
-                'X-Amz-Content-Sha256': 'UNSIGNED-PAYLOAD',
-            },
-            body: file,
-        });
+        const { data, error } = await supabase.storage
+            .from(bucket)
+            .upload(key, file, {
+                contentType: file.type,
+                upsert: true,
+            });
 
-        if (!response.ok) throw new Error(`Upload failed: ${response.status}`);
+        if (error) throw error;
 
-        const publicUrl = R2_CONFIG.publicUrl
-            ? `${R2_CONFIG.publicUrl}/${key}`
-            : endpoint;
+        // Get public URL
+        const { data: urlData } = supabase.storage.from(bucket).getPublicUrl(key);
 
-        return { url: publicUrl, key, success: true, demo: false };
+        return {
+            url: urlData.publicUrl,
+            key,
+            success: true,
+            demo: false,
+        };
     } catch (error) {
-        console.error('R2 upload error:', error);
+        console.error('Upload error:', error);
         throw error;
     }
 }
 
-/**
- * Upload profile image
- */
 export async function uploadProfileImage(file, userId) {
-    return uploadFile(file, `profiles/${userId}`);
+    return uploadFile(file, `profiles/${userId}`, 'media');
 }
 
-/**
- * Upload post image
- */
 export async function uploadPostImage(file, userId) {
-    return uploadFile(file, `posts/${userId}`);
+    return uploadFile(file, `posts/${userId}`, 'media');
 }
 
-/**
- * Upload story image/video
- */
 export async function uploadStoryMedia(file, userId) {
-    return uploadFile(file, `stories/${userId}`);
+    return uploadFile(file, `stories/${userId}`, 'media');
 }
 
-/**
- * Upload group cover image
- */
 export async function uploadGroupCover(file, groupId) {
-    return uploadFile(file, `groups/${groupId}`);
+    return uploadFile(file, `groups/${groupId}`, 'media');
 }
 
 /**
- * Delete a file from R2
+ * Delete a file from Supabase Storage
  */
-export async function deleteFile(key) {
+export async function deleteFile(key, bucket = 'media') {
     if (isDemoMode()) {
         console.log(`🗑️ [Demo] Would delete: ${key}`);
         return { success: true, demo: true };
     }
 
-    const endpoint = `https://${R2_CONFIG.accountId}.r2.cloudflarestorage.com/${R2_CONFIG.bucketName}/${key}`;
-
     try {
-        const response = await fetch(endpoint, { method: 'DELETE' });
-        return { success: response.ok, demo: false };
+        const { error } = await supabase.storage.from(bucket).remove([key]);
+        if (error) throw error;
+        return { success: true, demo: false };
     } catch (error) {
-        console.error('R2 delete error:', error);
+        console.error('Delete error:', error);
         throw error;
     }
 }
@@ -115,9 +98,10 @@ export async function deleteFile(key) {
 /**
  * Get public URL for a stored file
  */
-export function getPublicUrl(key) {
-    if (isDemoMode() || !R2_CONFIG.publicUrl) {
+export function getPublicUrl(key, bucket = 'media') {
+    if (isDemoMode()) {
         return `https://placehold.co/400x400/FF9933/white?text=Media`;
     }
-    return `${R2_CONFIG.publicUrl}/${key}`;
+    const { data } = supabase.storage.from(bucket).getPublicUrl(key);
+    return data.publicUrl;
 }

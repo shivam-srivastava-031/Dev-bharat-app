@@ -1,4 +1,4 @@
-import { createContext, useContext, useState, useEffect } from 'react';
+import { createContext, useContext, useState, useEffect, useRef } from 'react';
 import { onAuthChange, loginWithGoogle, loginWithEmail, signupWithEmail, loginWithPhone, logout, trackEvent } from '../lib/firebase';
 import { hydrateFromSupabase } from '../services/eventTracker';
 
@@ -9,8 +9,11 @@ export function AuthProvider({ children }) {
     const [loading, setLoading] = useState(true);
     const [isDemoMode, setIsDemoMode] = useState(false);
 
+    const loadingRef = useRef(true);
+
     useEffect(() => {
         const unsubscribe = onAuthChange((firebaseUser) => {
+            loadingRef.current = false;
             if (firebaseUser) {
                 setUser({
                     uid: firebaseUser.uid,
@@ -30,7 +33,7 @@ export function AuthProvider({ children }) {
 
         // If Firebase is not configured, switch to demo mode after a short delay
         const timer = setTimeout(() => {
-            if (loading) {
+            if (loadingRef.current) {
                 setIsDemoMode(true);
                 setUser({
                     uid: 'demo-user',

@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import PostCard from '../components/PostCard';
 import { getFeedPhotos } from '../services/unsplashService';
 import { getTopHeadlines, formatNewsDate } from '../services/newsService';
@@ -89,18 +89,18 @@ export default function Feed() {
         }
     };
 
-    // Build raw posts from API data
-    const rawPosts = [
+    // Build rawPosts with stable IDs and useMemo to prevent stale closures
+    const rawPosts = useMemo(() => [
         ...(weather ? [{
             id: 'weather', type: 'weather', data: weather,
             createdAt: new Date().toISOString(),
         }] : []),
-        ...cricket.map((match, i) => ({
-            id: `cricket-${i}`, type: 'cricket', data: match,
+        ...cricket.map((match) => ({
+            id: `cricket-${match.id || match.name?.replace(/\\s/g, '-')}`, type: 'cricket', data: match,
             category: 'cricket', createdAt: match.date || new Date().toISOString(),
         })),
-        ...news.map((article, i) => ({
-            id: `news-${i}`, type: 'news', data: article,
+        ...news.map((article) => ({
+            id: `news-${article.url ? btoa(article.url).slice(0, 8) : article.title?.slice(0, 20)}`, type: 'news', data: article,
             category: 'news', createdAt: article.publishedAt || new Date().toISOString(),
         })),
         ...(Array.isArray(photos) ? photos : []).map((photo) => ({
@@ -112,17 +112,25 @@ export default function Feed() {
             image: photo.urls?.regular || photo.urls?.thumb,
             likes: photo.likes || 0,
             comments: Math.floor(Math.random() * 100),
-            verified: Math.random() > 0.5,
+            verified: (photo.likes || 0) > 1000,
             category: 'photos', createdAt: new Date().toISOString(),
         })),
-    ];
+    ], [photos, news, cricket, weather]);
 
     // 🧠 Run full feed pipeline (cold start → rank → trending → fatigue → diversity)
     const [posts, setPosts] = useState([]);
     useEffect(() => {
         if (rawPosts.length === 0) return;
-        setPosts(runPipeline(rawPosts));
-    }, [photos, news, cricket, weather]);
+
+        // Inject Collaborative Filtering ("People like you also liked")
+        const collaborativePosts = getCollaborativeRecommendations(rawPosts, 3);
+        const enrichedPosts = [
+            ...rawPosts,
+            ...collaborativePosts.map(p => ({ ...p, _isDiscovery: true })),
+        ];
+
+        setPosts(runPipeline(enrichedPosts));
+    }, [rawPosts]);
 
     // Event tracking callbacks
     const handlePostLike = (postId, contentType) => trackLike(postId, contentType);

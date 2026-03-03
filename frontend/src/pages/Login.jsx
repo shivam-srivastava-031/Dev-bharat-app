@@ -41,6 +41,10 @@ export default function Login() {
 
     const handlePhone = async (e) => {
         e.preventDefault();
+        if (!document.getElementById('recaptcha-container')) {
+            setError('Please wait a moment and try again.');
+            return;
+        }
         setError('');
         setLoading(true);
         try {
@@ -82,8 +86,8 @@ export default function Login() {
                             key={tab.id}
                             onClick={() => { setMode(tab.id); setError(''); }}
                             className={`flex-1 py-2.5 rounded-xl text-xs font-bold transition-all ${mode === tab.id
-                                    ? 'gradient-saffron text-white shadow-glow-saffron-sm'
-                                    : 'text-dark-300 hover:text-dark-100'
+                                ? 'gradient-saffron text-white shadow-glow-saffron-sm'
+                                : 'text-dark-300 hover:text-dark-100'
                                 }`}
                         >
                             {tab.label}

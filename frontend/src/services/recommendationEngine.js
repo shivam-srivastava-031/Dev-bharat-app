@@ -12,24 +12,11 @@
  */
 
 import { getAffinityScore, getPositiveSignals, getNegativeSignals, getTopAffinities, getSuppressedContent, trackEvent } from './eventTracker';
+import { getVariant } from './feedPipeline';
 
 // ===== A/B Test Framework =====
 
-const AB_TEST_KEY = 'bharatapp_ab_variant';
 const AB_METRICS_KEY = 'bharatapp_ab_metrics';
-
-/**
- * Get or assign the user's A/B variant. Persisted in localStorage.
- */
-function getVariant() {
-    let variant = localStorage.getItem(AB_TEST_KEY);
-    if (!variant) {
-        variant = Math.random() < 0.5 ? 'A' : 'B';
-        localStorage.setItem(AB_TEST_KEY, variant);
-        console.log(`🧪 A/B test: Assigned to variant ${variant}`);
-    }
-    return variant;
-}
 
 /**
  * Get weight config for the current variant.
